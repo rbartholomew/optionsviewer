@@ -1,0 +1,6 @@
+Create and Option viewer
+Price options according to base price
+get past realized vol
+display in a table by strike
+
+use realtime feed from yahoo to reprice and push over socketio
