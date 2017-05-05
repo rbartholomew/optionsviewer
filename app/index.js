@@ -47,13 +47,25 @@ const Application = React.createClass({
 
 const OptionsGrid = React.createClass({
     getInitialState: function() {
-        return { instruments : []};
+        return { 
+            lastPrice: 0.0,
+            instruments : []
+        };
     },
     componentDidMount: async function() {
         const symbol = this.props.symbol;
-        const instruments = await Client.getOptionsChain(symbol);
+        const instrument = await Client.getOptionsChain(symbol);
         this.setState({
-            instruments: instruments.instruments
+            lastPrice: instrument.instrument.lastPrice,
+            instruments: instrument.instrument.strikes
+        })
+    },
+    componentWillReceiveProps: async function(nextProps) {
+        const symbol = nextProps.symbol;
+        const instrument = await Client.getOptionsChain(symbol);
+        this.setState({
+            lastPrice: instrument.instrument.lastPrice,
+            instruments: instrument.instrument.strikes
         })
     },
     render: function() {
@@ -61,11 +73,11 @@ const OptionsGrid = React.createClass({
             return (
                 <tr>
                     <td>{strike.call.expiry}</td>
-                    <td>{strike.call.price}</td>
-                    <td>{strike.call.vol}</td>
+                    <td>{strike.call.price.toFixed(2)}</td>
+                    <td>{strike.call.vol.toFixed(2)}</td>
                     <td>{strike.strike}</td>
-                    <td>{strike.put.vol}</td>
-                    <td>{strike.put.price}</td>
+                    <td>{strike.put.vol.toFixed(2)}</td>
+                    <td>{strike.put.price.toFixed(2)}</td>
                     <td>{strike.put.expiry}</td>
                 </tr>)
         });
@@ -76,7 +88,7 @@ const OptionsGrid = React.createClass({
                         <tr>
                             <th colspan="3"></th>
                             <th colSpan="2">{this.props.symbol}</th>
-                            <th>150.96</th>
+                            <th>{this.state.lastPrice.toFixed(2)}</th>
                         </tr>
                         <tr>
                             <th>Expiry</th>
