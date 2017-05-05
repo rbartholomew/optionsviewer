@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Table from 'react-bootstrap/lib/Table';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+import Button from 'react-bootstrap/lib/Button';
 import Client from './client';
 
 const styles = {
@@ -12,12 +14,44 @@ const styles = {
     }
 };
 
+const Application = React.createClass({
+    getInitialState: function() {
+        return {
+            selectedSymbol: "AAPL", 
+            symbols: [ "AAPL", "FB", "MSFT" ]
+        };
+    },
+    selectSymbol: function(e) {
+        const symbol = e.target.textContent;
+        console.log("Clicked " + symbol);
+        this.setState({
+            selectedSymbol: symbol
+        });
+    },
+    render: function() {
+        let clickHandle = this.selectSymbol
+        const buttons = this.state.symbols.map(function(symbol) {
+            return (<Button bsStyle="primary" bsSize="large" onClick={clickHandle}>{symbol}</Button>);
+        })
+
+        return (
+            <div>
+                <ButtonToolbar>
+                    {buttons}
+                </ButtonToolbar>
+                <OptionsGrid symbol={this.state.selectedSymbol}/>
+            </div>
+        );
+    }
+});
+
 const OptionsGrid = React.createClass({
     getInitialState: function() {
         return { instruments : []};
     },
     componentDidMount: async function() {
-        const instruments = await Client.getOptionsChain("FB");
+        const symbol = this.props.symbol;
+        const instruments = await Client.getOptionsChain(symbol);
         this.setState({
             instruments: instruments.instruments
         })
@@ -37,10 +71,12 @@ const OptionsGrid = React.createClass({
         });
 
         return (
-                <Table>
+                <Table striped bordered>
                     <thead>
                         <tr>
-                            <th colSpan="7">FB</th>
+                            <th colspan="3"></th>
+                            <th colSpan="2">{this.props.symbol}</th>
+                            <th>150.96</th>
                         </tr>
                         <tr>
                             <th>Expiry</th>
@@ -60,4 +96,4 @@ const OptionsGrid = React.createClass({
     }
 });
 
-ReactDOM.render(<OptionsGrid />, document.getElementById('app'));
+ReactDOM.render(<Application />, document.getElementById('app'));
