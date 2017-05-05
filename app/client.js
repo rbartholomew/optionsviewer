@@ -1,25 +1,13 @@
 
 
-async function getFiles() {
+async function getOptionsChain(symbol) {
 
-    let res = await fetch(`api/files`, {
+    let res = await fetch(`api/optionschain/${symbol}`, {
         accept: 'application/json'
     });
 
     res = checkStatus(res);
     return parseJSON(res);
-}
-
-async function getFile(name) {
-
-    let res = await fetch(`api/file/${name}`, {
-        accept: 'application/json'
-    });
-
-    res = checkStatus(res);
-    let dataFrame = await parseJSON(res);
-
-    return { headers: dataFrame.columns, data: dataFrame.data };
 }
 
 function checkStatus(response) {
@@ -37,5 +25,5 @@ async function parseJSON(response) {
   return await response.json();
 }
 
-const Client = { getFiles, getFile };
+const Client = { getOptionsChain };
 export default Client;

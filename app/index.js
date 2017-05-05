@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import FileContainer from './filecontainer';
+import Table from 'react-bootstrap/lib/Table';
 import Client from './client';
 
 const styles = {
@@ -9,47 +9,55 @@ const styles = {
         border: '1px solid #cdced0',
         borderRadius: 2,
         boxShadow: '0 1px 1px rgba(0,0,0,0.05)'
-    },
-    inputelement: {
-        margin: '10px',
-    },
-    column: {
-        paddingRight: '20px'
-    },
-    depressed: {
-        backgroundColor: '#4e69a2',
-        borderColor: '#c6c7ca',
-        color: '#5890ff'
     }
 };
 
-const FileSelector = React.createClass({
+const OptionsGrid = React.createClass({
     getInitialState: function() {
-        return { files: []};
+        return { instruments : []};
     },
     componentDidMount: async function() {
-        let files = await Client.getFiles();
+        const instruments = await Client.getOptionsChain("FB");
         this.setState({
-            files: files.files
-        });
+            instruments: instruments.instruments
+        })
     },
     render: function() {
-        var fileList = this.state.files.map((file) => {
-            return <li>{file}</li>;
+        const strikes = this.state.instruments.map(function(strike) {
+            return (
+                <tr>
+                    <td>{strike.call.expiry}</td>
+                    <td>{strike.call.price}</td>
+                    <td>{strike.call.vol}</td>
+                    <td>{strike.strike}</td>
+                    <td>{strike.put.vol}</td>
+                    <td>{strike.put.price}</td>
+                    <td>{strike.put.expiry}</td>
+                </tr>)
         });
 
         return (
-            
-            <div>
-                <ul>
-                    {fileList}
-                </ul>
-                <FileContainer />
-            </div>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th colSpan="7">FB</th>
+                        </tr>
+                        <tr>
+                            <th>Expiry</th>
+                            <th>Price</th>
+                            <th>Vol</th>
+                            <th>Strike</th>
+                            <th>Vol</th>
+                            <th>Price</th>
+                            <th>Expiry</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {strikes}
+                    </tbody>
+                </Table>
         );
     }
 });
 
-
-
-ReactDOM.render(<FileSelector />, document.getElementById('app'));
+ReactDOM.render(<OptionsGrid />, document.getElementById('app'));

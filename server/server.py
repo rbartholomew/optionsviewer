@@ -6,25 +6,66 @@ from flask import jsonify
 
 app = Flask(__name__)
 
-file_path = "/home/richie/Code/finance/GoogleData/"
+#required to run flask
+#export FLASK_APP=server.py
 
-@app.route('/api/files')
-def get_files():
-    files = os.listdir(file_path)
-    return jsonify({"files": files })
+@app.route('/api/optionschain/<symbol>')
+def start(symbol):
 
-@app.route('/api/symbols')
-def get_symbols():
-    name = file_path + name
-    df = pd.read_csv("sp500_symbols.csv", delimiter=",")
-    columns = df.columns
-    return jsonify({ "symbols": columns })
+    instruments = []
 
-@app.route('/api/file/<name>')
-def get_file(name):
-    name = file_path + name
-    print(name)
-    #needs to be a array of arrays
-    df = pd.read_csv(name, delimiter=",")
-    return df.to_json(orient='split')
+    instruments.append({ 
+        "call": { 
+            "expiry": "May 17, 2017",
+            "price": 5.65,
+            "vol": 25.5
+        },
+        "strike": 145.00,
+        "put": {
+            "vol": 25.5,
+            "price": .25,
+            "expiry": "May 17, 2017" 
+        }})
+
+    instruments.append({
+        "call": {
+            "expiry": "May 17, 2017",
+            "price": 4.10,
+            "vol": 25.5 
+        },
+        "strike": 147.50,
+        "put": {
+            "vol": 25.5,
+            "price": 1.12,
+            "expiry": "May 17, 2017"
+        }})
+
+    instruments.append({
+        "call": {
+            "expiry": "May 17, 2017",
+            "price": 1.09,
+            "vol": 25.5
+        },
+        "strike": 150.00,
+        "put": {
+            "vol": 25.5,
+            "price": 1.75,
+            "expiry": "May 17, 2017"
+        }})
+
+    instruments.append({
+        "call": {
+            "expiry": "May 17, 2017",
+           "price": .75,
+            "vol": 25.5
+        },
+        "strike": 152.50,
+        "put": {
+            "vol": 25.5,
+            "price": 2.75,
+            "expiry": "May 17, 2017"
+        }})
+
+    return jsonify({"instruments": instruments})
+
 
